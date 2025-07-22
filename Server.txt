@@ -1,0 +1,43 @@
+package CharacterStuffing;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+
+class Server {
+    public static void main(String[] args) {
+        try {
+            ServerSocket serverSocket = new ServerSocket(5000);
+            System.out.println("Server is running on port 5000...");
+
+            Socket socket = serverSocket.accept();
+            System.out.println("Client Connected!");
+
+            DataInputStream in = new DataInputStream(socket.getInputStream());
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+
+            // Receive the character-stuffed message
+            String receivedData = in.readUTF();
+            System.out.println("Received (Character Stuffed): " + receivedData);
+
+            // Perform Character Unstuffing
+            String unstuffedData = charUnstuff(receivedData);
+            System.out.println("Unstuffed Data: " + unstuffedData);
+
+            // Send acknowledgment
+            out.writeUTF("Data received and unstuffed successfully!");
+            out.flush();
+
+            socket.close();
+            serverSocket.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Function to perform character unstuffing
+    public static String charUnstuff(String stuffedData) {
+        return stuffedData.replace("\\#", "#").replace("\\$", "$");
+    }
+}
